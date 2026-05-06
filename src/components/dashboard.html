@@ -13,6 +13,25 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     <style>
+        /* Demo state buttons */
+        .db-state-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1.5px solid #e8a84c;
+            background: #fff;
+            color: #8b6914;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+        .db-state-btn.active {
+            background: #1a2b35;
+            border-color: #1a2b35;
+            color: #fff;
+        }
+
         /* Animated Checkmark */
         .checkmark {
             width: 56px;
@@ -212,140 +231,69 @@
         <main class="app-main" style="background:#f5f7f8;">
             <div class="content-wrap">
 
-                <h4 class="page-title">Welcome back, Jeevan 👋</h4>
-                <p style="font-size: 14px; color: #7a8f98; margin-top: 4px; margin-bottom: 24px;">Here's your AML/CTF compliance overview for today.</p>
-
-                <!-- Stat cards row -->
-                <div class="row mb-4">
-                    <div class="col-6 col-lg-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-value">247</div>
-                            <div class="stat-label">Active Clients</div>
-                            <div style="font-size: 11px; color: #388e3c; margin-top: 4px;">↑ 12 this quarter</div>
-                        </div>
+                <!-- Demo state banner -->
+                <div id="demoBanner" style="background:#fff4d4; border:1.5px dashed #e8a84c; border-radius:10px; padding:12px 18px; margin-bottom:20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:11px; font-weight:700; color:#8b6914; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:2px;">Demo state</div>
+                        <div style="font-size:11px; color:#7a5a0f;">Switch sample states — won't appear in production</div>
                     </div>
-                    <div class="col-6 col-lg-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-value">14</div>
-                            <div class="stat-label">High Risk Clients</div>
-                            <div style="font-size: 11px; color: #e53935; margin-top: 4px;">↑ 2 since last review</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-value">2</div>
-                            <div class="stat-label">Overdue Reviews</div>
-                            <div style="font-size: 11px; color: #7a8f98; margin-top: 4px;">Action required</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">SMRs Filed (FY26)</div>
-                            <div style="font-size: 11px; color: #388e3c; margin-top: 4px;">All within 3-day window</div>
-                        </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="db-state-btn" data-state="empty">Empty</button>
+                        <button class="db-state-btn active" data-state="inProgress">In progress</button>
+                        <button class="db-state-btn" data-state="nearComplete">Complete</button>
                     </div>
                 </div>
 
-                <!-- Yearly Activity chart -->
-                <div class="dash-card mb-4">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-                        <div>
-                            <h6 class="dash-card-title">Transaction Monitoring Activity</h6>
-                            <p class="dash-card-sub" style="margin: 0;">Monthly alerts generated vs. dismissed — FY 2025–26</p>
-                        </div>
-                        <div style="display:flex; gap:14px; font-size:11px; color:#7a8f98; align-items:center;">
-                            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;background:#19A3A3;border-radius:2px;display:inline-block;"></span>Alerts raised</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;background:#75A501;border-radius:2px;display:inline-block;"></span>Dismissed</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;background:#e53935;border-radius:2px;display:inline-block;"></span>Escalated to SMR</span>
-                        </div>
-                    </div>
-                    <div style="position:relative; height:240px;">
-                        <canvas id="yearlyChart"></canvas>
-                    </div>
+                <!-- Title row -->
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="page-title mb-0">Dashboard</h4>
+                    <button class="db-continue-btn" id="dbSettingsBtn">Settings <i class="fas fa-cog ml-2"></i></button>
                 </div>
 
-                <!-- Bottom row -->
-                <div class="row">
-                    <!-- Stats donut -->
-                    <div class="col-12 col-lg-3 mb-4">
-                        <div class="dash-card h-100">
-                            <h6 class="dash-card-title">Client Risk Distribution</h6>
-                            <p class="dash-card-sub">247 active clients · FY 2025–26</p>
-                            <div class="d-flex align-items-center justify-content-between mt-3">
-                                <div style="position:relative; width:110px; height:110px; flex-shrink:0;">
-                                    <canvas id="donutChart"></canvas>
-                                    <div class="donut-center-label">247</div>
-                                </div>
-                                <div class="chart-legend ml-3">
-                                    <div class="legend-item"><span class="legend-dot" style="background:#e53935"></span>High risk — 14 (6%)</div>
-                                    <div class="legend-item"><span class="legend-dot" style="background:#FF9700"></span>Medium risk — 68 (28%)</div>
-                                    <div class="legend-item"><span class="legend-dot" style="background:#75A501"></span>Low risk — 165 (67%)</div>
-                                </div>
-                            </div>
+                <!-- Tab nav -->
+                <div class="dash-tabs mb-4">
+                    <a href="#" class="dash-tab active">Sample Tab Heading</a>
+                </div>
+
+                <!-- Document status cards (dynamic) -->
+                <div id="db-reassessments" class="row mb-4"></div>
+
+                <!-- Two-column layout -->
+                <div class="row" style="margin-left:-10px; margin-right:-10px;">
+
+                    <!-- Left column -->
+                    <div id="db-col-left" class="col-12 col-lg-7" style="padding-left:10px; padding-right:10px;">
+
+                        <div class="db-card-wrap mb-4">
+                            <div class="db-drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                            <div id="db-personnel" class="dash-card"></div>
                         </div>
+
+                        <div class="db-card-wrap mb-4">
+                            <div class="db-drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                            <div id="db-training" class="dash-card"></div>
+                        </div>
+
+                        <div class="db-card-wrap mb-3">
+                            <div class="db-drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                            <div id="db-review" class="dash-card"></div>
+                        </div>
+
                     </div>
 
-                    <!-- Progress Arc -->
-                    <div class="col-12 col-lg-3 mb-4">
-                        <div class="dash-card h-100">
-                            <h6 class="dash-card-title">AML/CTF Training Completion</h6>
-                            <p class="dash-card-sub">Staff training compliance rate</p>
-                            <div class="arc-wrap mt-2">
-                                <div class="arc-inner">
-                                    <canvas id="arcChart" width="160" height="90"></canvas>
-                                    <div class="arc-label">
-                                        <div class="arc-percent">78%</div>
-                                        <div class="arc-complete">Complete</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="margin-top: 12px;">
-                                <span style="display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #fff7ec; color: #b06000; margin-right: 4px;">3 staff overdue</span>
-                                <span style="display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #e8f7f7; color: #127b7b;">Next: 14 May 2026</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Right column -->
+                    <div id="db-col-right" class="col-12 col-lg-5" style="padding-left:10px; padding-right:10px;">
 
-                    <!-- Progress Linear -->
-                    <div class="col-12 col-lg-3 mb-4">
-                        <div class="dash-card h-100">
-                            <h6 class="dash-card-title">AUSTRAC Reporting Compliance</h6>
-                            <p class="dash-card-sub">Suspicious matter reports on time</p>
-                            <div class="mt-4">
-                                <div class="linear-bar-wrap">
-                                    <div class="linear-bar-track">
-                                        <div class="linear-bar-fill" style="width:100%; background: #75A501;"></div>
-                                    </div>
-                                </div>
-                                <div class="linear-label-row mt-2">
-                                    <span class="linear-percent">100%</span>
-                                    <span class="linear-complete">Complete</span>
-                                </div>
-                            </div>
-                            <div style="margin-top: 12px;">
-                                <span style="display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #f0f7e0; color: #4a6e00; margin-right: 4px;">All SMRs filed</span>
-                                <span style="display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #f0f7e0; color: #4a6e00;">3 TTRs lodged</span>
-                            </div>
+                        <div class="db-card-wrap mb-4">
+                            <div class="db-drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                            <div id="db-checklist" class="dash-card"></div>
                         </div>
-                    </div>
 
-                    <!-- Compliance Status -->
-                    <div class="col-12 col-lg-3 mb-4">
-                        <div class="dash-card h-100">
-                            <h6 class="dash-card-title">Compliance Status</h6>
-                            <p class="dash-card-sub">Current quarter overview</p>
-                            <div class="d-flex align-items-center justify-content-between mt-3">
-                                <div style="position:relative; width:110px; height:110px; flex-shrink:0;">
-                                    <canvas id="pieChart"></canvas>
-                                </div>
-                                <div class="chart-legend ml-3">
-                                    <div class="legend-item"><span class="legend-dot" style="background:#75A501"></span>Compliant</div>
-                                    <div class="legend-item"><span class="legend-dot" style="background:#FF9700"></span>Pending</div>
-                                    <div class="legend-item"><span class="legend-dot" style="background:#e53935"></span>Overdue</div>
-                                </div>
-                            </div>
+                        <div class="db-card-wrap mb-3">
+                            <div class="db-drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                            <div id="db-numbered" class="dash-card"></div>
                         </div>
+
                     </div>
                 </div>
 
@@ -410,6 +358,44 @@
         </div>
     </div>
 
+    <!-- Customise Dashboard Modal -->
+    <div class="ukp-modal-overlay" id="dbCustomiseModalOverlay">
+        <div class="ukp-modal" style="max-width:420px;">
+            <div class="ukp-modal-header">Customise dashboard</div>
+            <div class="ukp-modal-body">
+                <p style="font-size:13px;color:#7a8f98;margin-bottom:18px;">Choose which widgets appear on your dashboard.</p>
+                <div class="ukp-modal-form">
+                    <div class="ukp-modal-form-group full" style="margin-bottom:0;">
+                        <label class="db-widget-row" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f6;cursor:pointer;margin:0;">
+                            <span class="db-toggle"><input type="checkbox" id="wgt-personnel" class="db-widget-chk" checked><span class="db-toggle-track"><span class="db-toggle-thumb"></span></span></span>
+                            <span style="font-size:13px;color:#1a2b35;font-weight:500;">Personnel training</span>
+                        </label>
+                        <label class="db-widget-row" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f6;cursor:pointer;margin:0;">
+                            <span class="db-toggle"><input type="checkbox" id="wgt-training" class="db-widget-chk" checked><span class="db-toggle-track"><span class="db-toggle-thumb"></span></span></span>
+                            <span style="font-size:13px;color:#1a2b35;font-weight:500;">Your training</span>
+                        </label>
+                        <label class="db-widget-row" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f6;cursor:pointer;margin:0;">
+                            <span class="db-toggle"><input type="checkbox" id="wgt-review" class="db-widget-chk" checked><span class="db-toggle-track"><span class="db-toggle-thumb"></span></span></span>
+                            <span style="font-size:13px;color:#1a2b35;font-weight:500;">Documents awaiting review</span>
+                        </label>
+                        <label class="db-widget-row" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f6;cursor:pointer;margin:0;">
+                            <span class="db-toggle"><input type="checkbox" id="wgt-checklist" class="db-widget-chk" checked><span class="db-toggle-track"><span class="db-toggle-thumb"></span></span></span>
+                            <span style="font-size:13px;color:#1a2b35;font-weight:500;">AML/CTF setup checklist</span>
+                        </label>
+                        <label class="db-widget-row" style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;margin:0;">
+                            <span class="db-toggle"><input type="checkbox" id="wgt-numbered" class="db-widget-chk" checked><span class="db-toggle-track"><span class="db-toggle-thumb"></span></span></span>
+                            <span style="font-size:13px;color:#1a2b35;font-weight:500;">AML/CTF numbered checklist</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="ukp-modal-footer">
+                <button class="ukp-modal-cancel-btn" id="dbCustomiseCancel">Cancel</button>
+                <button class="ukp-modal-save-btn" id="dbCustomiseSave">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -452,115 +438,315 @@
             }, 1800);
         })();
 
-        // Tab switching
-        document.querySelectorAll('.ra-tab').forEach(function(tab) {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.ra-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
+        // ── Dashboard data engine ──
+        (function() {
 
-        // ── Transaction Monitoring Activity Bar Chart ──
-        new Chart(document.getElementById('yearlyChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr'],
-                datasets: [
-                    {
-                        label: 'Alerts raised',
-                        data: [18,22,15,27,19,24,21,30,26,19],
-                        backgroundColor: 'rgba(25,163,163,0.75)',
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Dismissed',
-                        data: [14,18,12,22,16,20,17,25,22,14],
-                        backgroundColor: 'rgba(117,165,1,0.7)',
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Escalated (SMR)',
-                        data: [1,0,0,1,0,0,1,0,0,0],
-                        backgroundColor: 'rgba(229,57,53,0.8)',
-                        borderRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#7a8f98' } },
-                    y: { grid: { color: '#eaf0f3' }, ticks: { font: { size: 11 }, color: '#7a8f98' }, beginAtZero: true }
+            // ── Data ──
+            var DEMO_STATES = {
+                empty: {
+                    reassessments: [],
+                    personnel: [],
+                    myTraining: [],
+                    awaitingReview: [],
+                    checklist: { complete: 0, total: 0, steps: [] },
+                    numbered: []
+                },
+                inProgress: {
+                    reassessments: [
+                        { num: 10, label: 'DAYS OVERDUE',   name: 'Customer Due Diligence Policy v1.3', overdue: true },
+                        { num: 14, label: 'DAYS REMAINING', name: 'ML/TF Risk Assessment v2.0',         overdue: false },
+                        { num: 28, label: 'DAYS REMAINING', name: 'Sanctions Screening Process v1.2',   overdue: false }
+                    ],
+                    personnel: [
+                        { name: 'Mark Stevens',   status: 'complete' },
+                        { name: 'David Chen',     status: 'complete' },
+                        { name: 'Emma Thompson',  status: 'complete' },
+                        { name: 'Sarah Mitchell', status: 'complete' },
+                        { name: 'James Hooper',   status: 'overdue'  },
+                        { name: 'Rachel Wong',    status: 'not_started' },
+                        { name: 'Emily Baker',    status: 'not_started' }
+                    ],
+                    myTraining: [
+                        { name: 'AML/CTF Foundations',    status: 'complete'     },
+                        { name: 'Customer Due Diligence', status: 'in_progress'  },
+                        { name: 'Sanctions Screening',    status: 'not_started'  }
+                    ],
+                    awaitingReview: [
+                        { name: 'AML/CTF Program v1.0',                desc: 'Provide your firm details and designated services.' },
+                        { name: 'Customer Due Diligence Policy v2.1',  desc: 'Provide your firm details and designated services.' }
+                    ],
+                    checklist: { complete: 2, total: 4, steps: [false, true, true, true] },
+                    numbered: [
+                        { num: '01', title: 'Complete Firm Profile',      desc: 'Provide your firm details and designated services.', done: true  },
+                        { num: '02', title: 'Appoint Compliance Officer', desc: 'Nominate a fit-and-proper AML/CTF officer.',         done: true  },
+                        { num: '03', title: 'Build AML/CTF Program',      desc: 'Mark your Risk Assessment, Policies and Processes.', done: false }
+                    ]
+                },
+                nearComplete: {
+                    reassessments: [],
+                    personnel: [
+                        { name: 'Mark Stevens',   status: 'complete' },
+                        { name: 'David Chen',     status: 'complete' },
+                        { name: 'Emma Thompson',  status: 'complete' },
+                        { name: 'Sarah Mitchell', status: 'complete' },
+                        { name: 'James Hooper',   status: 'complete' },
+                        { name: 'Rachel Wong',    status: 'complete' },
+                        { name: 'Emily Baker',    status: 'complete' }
+                    ],
+                    myTraining: [
+                        { name: 'AML/CTF Foundations',    status: 'complete' },
+                        { name: 'Customer Due Diligence', status: 'complete' },
+                        { name: 'Sanctions Screening',    status: 'complete' }
+                    ],
+                    awaitingReview: [],
+                    checklist: { complete: 4, total: 4, steps: [true, true, true, true] },
+                    numbered: [
+                        { num: '01', title: 'Complete Firm Profile',      desc: 'Provide your firm details and designated services.', done: true },
+                        { num: '02', title: 'Appoint Compliance Officer', desc: 'Nominate a fit-and-proper AML/CTF officer.',         done: true },
+                        { num: '03', title: 'Build AML/CTF Program',      desc: 'Mark your Risk Assessment, Policies and Processes.', done: true }
+                    ]
+                }
+            };
+
+            var CHECKLIST_STEPS = [
+                'Assess your ML/TF risks',
+                'Document your policies',
+                'Document your processes',
+                'Generate your governing AML / CTF Program'
+            ];
+
+            var currentState = 'inProgress';
+
+            // ── Render helpers ──
+
+            function drawArc(pct) {
+                var canvas = document.getElementById('arcChart');
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+                var W = canvas.width, H = canvas.height;
+                var cx = W / 2, cy = H - 16;
+                var r = cy - 18;
+                ctx.clearRect(0, 0, W, H);
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, Math.PI, 0);
+                ctx.lineWidth = 28;
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineCap = 'round';
+                ctx.stroke();
+                if (pct > 0) {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, Math.PI, Math.PI + pct * Math.PI);
+                    ctx.lineWidth = 28;
+                    ctx.strokeStyle = '#8bc34a';
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
                 }
             }
-        });
 
-        // ── Client Risk Distribution Donut Chart ──
-        new Chart(document.getElementById('donutChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['High','Medium','Low'],
-                datasets: [{
-                    data: [14, 68, 165],
-                    backgroundColor: ['#e53935','#FF9700','#75A501'],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                cutout: '68%',
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: { legend: { display: false } },
-                animation: { duration: 800 }
+            function renderReassessments(data) {
+                var el = document.getElementById('db-reassessments');
+                if (!data.length) { el.innerHTML = ''; return; }
+                el.innerHTML = data.map(function(item) {
+                    var overdue = item.overdue;
+                    return '<div class="col-12 col-md-4 mb-3">' +
+                        '<div class="doc-status-card' + (overdue ? ' overdue' : '') + '">' +
+                            '<div>' +
+                                '<div class="doc-status-header">' +
+                                    '<span class="doc-status-num">' + item.num + '</span>' +
+                                    '<span class="doc-status-label' + (overdue ? ' overdue-label' : '') + '">' + item.label + '</span>' +
+                                '</div>' +
+                                '<div class="doc-status-name">' + item.name + '</div>' +
+                            '</div>' +
+                            '<div class="doc-status-icon' + (overdue ? ' overdue-icon' : '') + '">' +
+                                (overdue ? '<i class="fas fa-exclamation-triangle"></i>' : '') +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
             }
-        });
 
-        // ── Compliance Status Pie Chart ──
-        new Chart(document.getElementById('pieChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Compliant', 'Pending', 'Overdue'],
-                datasets: [{
-                    data: [245, 0, 2],
-                    backgroundColor: ['#75A501','#FF9700','#e53935'],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: { legend: { display: false } },
-                animation: { duration: 800 }
+            function renderPersonnel(people) {
+                var el = document.getElementById('db-personnel');
+                var total = people.length;
+                var done = people.filter(function(p) { return p.status === 'complete'; }).length;
+                var pct = total === 0 ? 0 : Math.round(done / total * 100);
+                if (total === 0) {
+                    el.innerHTML = '<h5 class="dash-card-title" style="font-size:17px;font-weight:700;margin-bottom:4px;">Personnel training</h5>' +
+                        '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><div class="db-q-icon"><i class="fas fa-question" style="font-size:10px;"></i></div><span style="font-size:13px;color:#9ab0b8;">No personnel assigned yet.</span></div>';
+                    return;
+                }
+                el.innerHTML =
+                    '<div class="d-flex align-items-start justify-content-between mb-1">' +
+                        '<div>' +
+                            '<h5 class="dash-card-title" style="font-size:17px;font-weight:700;margin-bottom:4px;">Personnel training</h5>' +
+                            '<p style="font-size:11px;font-weight:600;color:#7a8f98;letter-spacing:0.05em;margin:0;text-transform:uppercase;">' + done + '/' + total + ' Trained</p>' +
+                        '</div>' +
+                        '<div style="text-align:right;">' +
+                            '<div style="font-size:22px;font-weight:700;color:#1a2b35;line-height:1.1;">' + pct + '%</div>' +
+                            '<div style="font-size:12px;color:#9ab0b8;">Complete</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="mt-3">' +
+                        '<div class="linear-bar-track" style="height:30px;background:#4a7c20;border-radius:8px;">' +
+                            '<div class="linear-bar-fill" style="width:' + pct + '%;background:#8bc34a;border-radius:8px;height:100%;"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<hr style="border-color:#edf2f4;margin:18px 0 14px;">' +
+                    '<button class="db-continue-btn">Continue <i class="fas fa-arrow-right ml-2"></i></button>';
             }
-        });
 
-        // ── Progress Arc (canvas gauge) ──
-        (function() {
-            const canvas = document.getElementById('arcChart');
-            const ctx = canvas.getContext('2d');
-            const W = canvas.width, H = canvas.height;
-            const cx = W / 2, cy = H - 10;
-            const r = H - 20;
-            const pct = 0.78;
-            // Track
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, Math.PI, 0);
-            ctx.lineWidth = 18;
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineCap = 'round';
-            ctx.stroke();
-            // Fill
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, Math.PI, Math.PI + pct * Math.PI);
-            ctx.lineWidth = 18;
-            ctx.strokeStyle = '#19A3A3';
-            ctx.lineCap = 'round';
-            ctx.stroke();
+            function renderTraining(modules) {
+                var el = document.getElementById('db-training');
+                if (!modules.length) {
+                    el.innerHTML = '<h6 class="dash-card-title mb-2">Your training</h6>' +
+                        '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><div class="db-q-icon"><i class="fas fa-question" style="font-size:10px;"></i></div><span style="font-size:13px;color:#9ab0b8;">No training assigned yet.</span></div>';
+                    return;
+                }
+                var rows = modules.map(function(m, i) {
+                    var done = m.status === 'complete';
+                    var sep = i > 0 ? '<hr style="border-color:#edf2f4;margin:0;">' : '';
+                    return sep + '<div class="db-training-item d-flex align-items-center justify-content-between">' +
+                        '<span style="font-size:13px;color:#1a2b35;">' + m.name + '</span>' +
+                        (done
+                            ? '<span class="db-badge-complete">Complete</span>'
+                            : (m.status === 'in_progress'
+                                ? '<span class="db-inprogress-badge" style="font-size:11px;">In Progress</span>'
+                                : '<span style="font-size:11px;color:#9ab0b8;">Not started</span>')) +
+                    '</div>';
+                }).join('');
+                el.innerHTML = '<h6 class="dash-card-title mb-3">Your training</h6>' + rows;
+            }
+
+            function renderReview(items) {
+                var el = document.getElementById('db-review');
+                if (!items.length) {
+                    el.innerHTML = '<h6 class="dash-card-title mb-2">Documents awaiting your review</h6>' +
+                        '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><div class="db-q-icon"><i class="fas fa-question" style="font-size:10px;"></i></div><span style="font-size:13px;color:#9ab0b8;">You\'re all caught up.</span></div>';
+                    return;
+                }
+                var rows = items.map(function(item, i) {
+                    return '<div class="db-review-item"' + (i > 0 ? ' style="border-top:1px solid #f0f4f6;"' : '') + '>' +
+                        '<div class="d-flex align-items-center" style="gap:12px;">' +
+                            '<div class="db-q-icon"><i class="fas fa-question" style="font-size:10px;"></i></div>' +
+                            '<div>' +
+                                '<div style="font-size:13px;font-weight:600;color:#1a2b35;">' + item.name + '</div>' +
+                                '<div style="font-size:11px;color:#9ab0b8;font-style:italic;">' + item.desc + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<button class="db-review-btn">Review</button>' +
+                    '</div>';
+                }).join('');
+                el.innerHTML = '<h6 class="dash-card-title mb-3">Documents awaiting your review</h6>' + rows;
+            }
+
+            function renderChecklist(cl) {
+                var el = document.getElementById('db-checklist');
+                if (cl.total === 0) {
+                    el.innerHTML = '<h6 class="dash-card-title mb-2">AML/CTF setup checklist</h6>' +
+                        '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><div class="db-q-icon"><i class="fas fa-question" style="font-size:10px;"></i></div><span style="font-size:13px;color:#9ab0b8;">No checklist items yet.</span></div>';
+                    return;
+                }
+                var pct = cl.total === 0 ? 0 : Math.round(cl.complete / cl.total * 100);
+                var allDone = cl.complete === cl.total;
+                var badge = allDone
+                    ? '<span class="db-badge-complete" style="font-size:11px;">Complete</span>'
+                    : '<span class="db-inprogress-badge"><i class="fas fa-sync-alt mr-1" style="font-size:9px;"></i>In Progress</span>';
+
+                var stepRows = CHECKLIST_STEPS.map(function(step, i) {
+                    var done = cl.steps[i];
+                    var last = i === CHECKLIST_STEPS.length - 1;
+                    return '<div class="db-checklist-item"' + (last ? ' style="border-bottom:none;padding-bottom:0;"' : '') + '>' +
+                        '<div class="db-check-circle ' + (done ? 'ticked' : 'pending') + '"></div>' +
+                        '<span>' + step + '</span>' +
+                    '</div>';
+                }).join('');
+
+                el.innerHTML =
+                    '<div class="d-flex" style="gap:16px;">' +
+                        '<div style="flex:1;min-width:0;">' +
+                            '<div class="d-flex align-items-center mb-2" style="gap:10px;flex-wrap:wrap;">' +
+                                '<h6 class="dash-card-title mb-0">AML/CTF setup checklist</h6>' +
+                                badge +
+                            '</div>' +
+                            '<p style="font-size:12px;color:#7a8f98;margin-bottom:14px;">Mark your Risk Assessment, Policies, and Processes as current to build your Program</p>' +
+                            stepRows +
+                        '</div>' +
+                        '<div class="db-arc-panel">' +
+                            '<div class="arc-wrap">' +
+                                '<div class="arc-inner">' +
+                                    '<canvas id="arcChart" width="200" height="110"></canvas>' +
+                                    '<div class="arc-label">' +
+                                        '<div class="arc-percent">' + pct + '%</div>' +
+                                        '<div class="arc-complete">Complete</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<p style="font-size:12px;color:#7a8f98;margin:10px 0 14px;text-align:center;">' + cl.complete + '/' + cl.total + ' steps complete</p>' +
+                            '<button class="db-continue-btn" style="width:100%;justify-content:space-between;">Continue <i class="fas fa-arrow-right"></i></button>' +
+                        '</div>' +
+                    '</div>';
+
+                // Draw arc after inserting canvas into DOM
+                requestAnimationFrame(function() {
+                    drawArc(cl.total === 0 ? 0 : cl.complete / cl.total);
+                });
+            }
+
+            function renderNumbered(items) {
+                var el = document.getElementById('db-numbered');
+                if (!items.length) {
+                    el.innerHTML = '<h6 class="dash-card-title mb-2">AML/CTF setup checklist</h6>' +
+                        '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><div class="db-q-icon"><i class="fas fa-question" style="font-size:10px;"></i></div><span style="font-size:13px;color:#9ab0b8;">No checklist items yet.</span></div>';
+                    return;
+                }
+                var rows = items.map(function(item, i) {
+                    var last = i === items.length - 1;
+                    return '<div class="db-numbered-row"' + (last ? ' style="border-bottom:none;padding-bottom:0;"' : '') + '>' +
+                        '<div class="d-flex align-items-center" style="gap:12px;flex:1;min-width:0;">' +
+                            '<div class="db-check-circle ' + (item.done ? 'ticked' : 'pending') + ' flex-shrink-0"></div>' +
+                            '<div>' +
+                                '<div style="font-size:13px;font-weight:600;color:#1a2b35;">' + item.num + '. ' + item.title + '</div>' +
+                                '<div style="font-size:11px;color:#9ab0b8;font-style:italic;">' + item.desc + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        (item.done ? '<span class="db-badge-complete">Complete</span>' : '<span style="font-size:11px;color:#9ab0b8;">Not started</span>') +
+                    '</div>';
+                }).join('');
+                el.innerHTML = '<h6 class="dash-card-title mb-3">AML/CTF setup checklist</h6>' + rows;
+            }
+
+            function emptyCard(title) {
+                return '<h6 class="dash-card-title mb-3">' + title + '</h6>' +
+                    '<div style="text-align:center; padding:24px 16px 16px;">' +
+                        '<img src="images/11080.svg" alt="Nothing here yet" style="width:160px; height:auto; margin-bottom:16px;">' +
+                        '<p style="font-size:13px; font-weight:600; color:#1a2b35; margin-bottom:4px;">You haven\'t added anything</p>' +
+                        '<p style="font-size:12px; color:#9ab0b8; margin:0; line-height:1.5;">This is a default state that conveys an idea / action.</p>' +
+                    '</div>';
+            }
+
+            function render(stateKey) {
+                var data = DEMO_STATES[stateKey];
+                renderReassessments(data.reassessments);
+                renderPersonnel(data.personnel);
+                renderTraining(data.myTraining);
+                renderReview(data.awaitingReview);
+                renderChecklist(data.checklist);
+                renderNumbered(data.numbered);
+            }
+
+            // ── State toggle ──
+            document.querySelectorAll('.db-state-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    currentState = this.dataset.state;
+                    document.querySelectorAll('.db-state-btn').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    render(currentState);
+                });
+            });
+
+            // ── Initial render ──
+            render(currentState);
+
         })();
     </script>
 
@@ -646,6 +832,195 @@
                     wrap.classList.remove('open');
                     btn.setAttribute('aria-expanded', 'false');
                 }
+            });
+        })();
+    </script>
+
+    <script>
+        // Dashboard drag and drop
+        (function() {
+            var dragging = null;
+
+            function getWraps() {
+                return Array.from(document.querySelectorAll('.db-card-wrap'));
+            }
+
+            function getColumn(wrap) {
+                return wrap.closest('#db-col-left, #db-col-right');
+            }
+
+            function init() {
+                getWraps().forEach(function(wrap) {
+                    wrap.setAttribute('draggable', 'true');
+
+                    wrap.addEventListener('dragstart', function(e) {
+                        dragging = wrap;
+                        wrap.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+
+                    wrap.addEventListener('dragend', function() {
+                        dragging = null;
+                        wrap.classList.remove('dragging');
+                        getWraps().forEach(function(w) {
+                            w.classList.remove('drag-over-top', 'drag-over-bottom');
+                        });
+                        rebalanceColumns();
+                    });
+
+                    wrap.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        if (!dragging || dragging === wrap) return;
+                        var rect = wrap.getBoundingClientRect();
+                        var mid = rect.top + rect.height / 2;
+                        getWraps().forEach(function(w) {
+                            w.classList.remove('drag-over-top', 'drag-over-bottom');
+                        });
+                        if (e.clientY < mid) {
+                            wrap.classList.add('drag-over-top');
+                        } else {
+                            wrap.classList.add('drag-over-bottom');
+                        }
+                    });
+
+                    wrap.addEventListener('dragleave', function() {
+                        wrap.classList.remove('drag-over-top', 'drag-over-bottom');
+                    });
+
+                    wrap.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        if (!dragging || dragging === wrap) return;
+                        var col = getColumn(wrap);
+                        var rect = wrap.getBoundingClientRect();
+                        if (e.clientY < rect.top + rect.height / 2) {
+                            col.insertBefore(dragging, wrap);
+                        } else {
+                            col.insertBefore(dragging, wrap.nextSibling);
+                        }
+                        wrap.classList.remove('drag-over-top', 'drag-over-bottom');
+                    });
+                });
+
+                // Allow dropping into an empty column
+                ['db-col-left', 'db-col-right'].forEach(function(colId) {
+                    var col = document.getElementById(colId);
+                    col.addEventListener('dragover', function(e) { e.preventDefault(); });
+                    col.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        if (!dragging) return;
+                        // Only append if dropped on the column itself (not a child wrap)
+                        if (e.target === col) {
+                            col.appendChild(dragging);
+                        }
+                    });
+                });
+            }
+
+            function rebalanceColumns() {
+                var colLeft  = document.getElementById('db-col-left');
+                var colRight = document.getElementById('db-col-right');
+                var leftHasContent  = colLeft.querySelector('.db-card-wrap:not([style*="display: none"])') !== null;
+                var rightHasContent = colRight.querySelector('.db-card-wrap:not([style*="display: none"])') !== null;
+
+                colLeft.className  = 'col-12';
+                colRight.className = 'col-12';
+                if (leftHasContent && rightHasContent) {
+                    colLeft.className  = 'col-12 col-lg-7';
+                    colRight.className = 'col-12 col-lg-5';
+                }
+                colLeft.style.paddingLeft   = '10px';
+                colLeft.style.paddingRight  = '10px';
+                colRight.style.paddingLeft  = '10px';
+                colRight.style.paddingRight = '10px';
+            }
+
+            init();
+        })();
+    </script>
+
+    <script>
+        // Customise Dashboard modal
+        (function() {
+            var overlay = document.getElementById('dbCustomiseModalOverlay');
+            var settingsBtn = document.getElementById('dbSettingsBtn');
+            var cancelBtn = document.getElementById('dbCustomiseCancel');
+            var saveBtn = document.getElementById('dbCustomiseSave');
+
+            var WIDGET_MAP = {
+                'wgt-personnel': 'db-personnel',
+                'wgt-training':  'db-training',
+                'wgt-review':    'db-review',
+                'wgt-checklist': 'db-checklist',
+                'wgt-numbered':  'db-numbered'
+            };
+
+            function openModal() {
+                Object.keys(WIDGET_MAP).forEach(function(chkId) {
+                    var inner = document.getElementById(WIDGET_MAP[chkId]);
+                    var chk = document.getElementById(chkId);
+                    if (inner && chk) {
+                        var wrap = inner.closest('.db-card-wrap');
+                        var target = wrap || inner;
+                        chk.checked = target.style.display !== 'none';
+                    }
+                });
+                overlay.classList.add('open');
+            }
+
+            function closeModal() {
+                overlay.classList.remove('open');
+            }
+
+            settingsBtn.addEventListener('click', openModal);
+            cancelBtn.addEventListener('click', closeModal);
+
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeModal();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+            });
+
+            function rebalanceColumns() {
+                var colLeft  = document.getElementById('db-col-left');
+                var colRight = document.getElementById('db-col-right');
+
+                function colHasVisible(col) {
+                    return Array.from(col.querySelectorAll('.db-card-wrap')).some(function(w) {
+                        return w.style.display !== 'none';
+                    });
+                }
+
+                var leftHasContent  = colHasVisible(colLeft);
+                var rightHasContent = colHasVisible(colRight);
+
+                colLeft.className  = 'col-12';
+                colRight.className = 'col-12';
+
+                if (leftHasContent && rightHasContent) {
+                    colLeft.className  = 'col-12 col-lg-7';
+                    colRight.className = 'col-12 col-lg-5';
+                }
+                colLeft.style.paddingLeft   = '10px';
+                colLeft.style.paddingRight  = '10px';
+                colRight.style.paddingLeft  = '10px';
+                colRight.style.paddingRight = '10px';
+            }
+
+            saveBtn.addEventListener('click', function() {
+                Object.keys(WIDGET_MAP).forEach(function(chkId) {
+                    var containerId = WIDGET_MAP[chkId];
+                    var inner = document.getElementById(containerId);
+                    var chk = document.getElementById(chkId);
+                    if (inner && chk) {
+                        var wrap = inner.closest('.db-card-wrap');
+                        var target = wrap || inner;
+                        target.style.display = chk.checked ? '' : 'none';
+                    }
+                });
+                rebalanceColumns();
+                closeModal();
             });
         })();
     </script>
