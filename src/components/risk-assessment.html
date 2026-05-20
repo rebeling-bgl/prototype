@@ -15,6 +15,129 @@
             background: #f5f7f8;
         }
 
+        /* Document History Timeline */
+        .dh-timeline {
+            border: 1px solid #e4edf1;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .dh-section {
+            border-bottom: 1px solid #e8eef2;
+        }
+        .dh-section:last-child { border-bottom: none; }
+        .dh-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 18px;
+            cursor: pointer;
+            user-select: none;
+            background: #fff;
+            transition: background 0.12s;
+        }
+        .dh-section-header:hover { background: #f7fafb; }
+        .dh-section-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #1a6b40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 11px;
+            color: #fff;
+        }
+        .dh-section-check.check-red    { background: #e53935; }
+        .dh-section-check.check-orange { background: #f97316; }
+        .dh-section-check.check-blue   { background: #1565a8; }
+        .dh-section-check.check-grey   { background: #9aabb5; }
+        .dh-section-title {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a2b35;
+        }
+        .dh-section-title .dh-name { color: #1565a8; font-weight: 700; }
+        .dh-section-time {
+            font-size: 13px;
+            color: #9aabb5;
+            margin-right: 6px;
+        }
+        .dh-section-chevron {
+            font-size: 11px;
+            color: #9aabb5;
+            transition: transform 0.2s;
+        }
+        .dh-section.collapsed .dh-section-chevron { transform: rotate(-90deg); }
+        .dh-section.collapsed .dh-section-body { display: none; }
+        .dh-section-body {
+            border-top: 1px solid #f0f4f6;
+            padding: 4px 18px 12px 50px;
+            position: relative;
+        }
+        .dh-section-body::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 8px;
+            width: 1.5px;
+            border-left: 2px dashed #d4e4ea;
+        }
+        .dh-sub-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 9px 0;
+            font-size: 14px;
+            color: #3a5060;
+            position: relative;
+        }
+        .dh-sub-item::before {
+            content: '—';
+            color: #c8d8df;
+            font-size: 13px;
+            flex-shrink: 0;
+            margin-left: -14px;
+            margin-right: 4px;
+        }
+        .dh-sub-label { color: #3a5060; }
+        .dh-sub-value[data-full] {
+            transition: max-width 0.3s ease, background 0.2s, border-color 0.2s;
+            overflow: hidden;
+        }
+        .dh-sub-value[data-full]:hover {
+            background: #eaf2ff;
+            border-color: #93c5fd;
+        }
+        .dh-sub-value .dh-val-text {
+            display: inline-block;
+            transition: opacity 0.15s ease, width 0.3s ease;
+        }
+        .dh-sub-value.animating .dh-val-text {
+            opacity: 0;
+        }
+        .dh-sub-value-file {
+            color: #0068ff !important;
+            font-weight: 600;
+        }
+        .dh-sub-value {
+            display: inline-block;
+            background: #f5f7f8;
+            border: 1px solid #dce8ed;
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #1a2b35;
+            white-space: nowrap;
+            max-width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         /* Animated Checkmark */
         .checkmark {
             width: 56px;
@@ -104,6 +227,75 @@
                 </svg>
                 Feedback
             </button>
+            <div class="notif-wrap" id="notifWrap" style="position:relative;">
+                <button class="header-icon-btn" id="notifBtn" title="Notifications" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell" style="font-size:17px; color:#fff;"></i>
+                </button>
+                <span class="notif-badge" id="notifBadge" style="display:none;"></span>
+                <span class="notif-dot" id="notifDot"></span>
+                <div class="notif-dropdown" id="notifDropdown">
+                    <div class="notif-dropdown-header">
+                        <span class="notif-dropdown-title">Notifications</span>
+                        <button class="notif-mark-all-btn" id="notifMarkAllBtn">Mark all as read <i class="fas fa-envelope" style="font-size:11px;margin-left:4px;"></i></button>
+                    </div>
+                    <div class="notif-tabs">
+                        <button class="notif-tab active" data-tab="unread">Unread Messages <span class="notif-tab-count" id="countUnread">3</span></button>
+                        <button class="notif-tab" data-tab="read">Read Messages <span class="notif-tab-count" id="countRead">0</span></button>
+                        <button class="notif-tab" data-tab="archived">Archived <span class="notif-tab-count" id="countArchived">0</span></button>
+                    </div>
+                    <div class="notif-search-wrap">
+                        <i class="fas fa-search notif-search-icon"></i>
+                        <input type="text" id="notifSearch" class="notif-search-input" placeholder="Search notifications\u2026">
+                    </div>
+                    <div class="notif-tab-content" id="notifTabUnread">
+                        <div class="notif-item">
+                            <div class="notif-item-top">
+                                <span class="notif-item-icon"><i class="fas fa-times-circle" style="color:#e53935;"></i></span>
+                                <span class="notif-item-title">Warning</span>
+                                <span class="notif-item-time">2 hours ago</span>
+                            </div>
+                            <p class="notif-item-body">Please ensure all details are correct. Failed/Incorrect checks will still incur a fee.</p>
+                            <div class="notif-item-actions">
+                                <button class="notif-action-btn notif-archive-btn">Archive</button>
+                                <button class="notif-action-btn notif-read-btn">Mark as Read <i class="fas fa-envelope" style="font-size:10px;margin-left:3px;"></i></button>
+                                <button class="notif-action-btn notif-view-btn">View Notification</button>
+                            </div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-item-top">
+                                <span class="notif-item-icon"><i class="fas fa-check-circle" style="color:#22c55e;"></i></span>
+                                <span class="notif-item-title">Success</span>
+                                <span class="notif-item-time">2 hours ago</span>
+                            </div>
+                            <p class="notif-item-body">Please ensure all details are correct. Failed/Incorrect checks will still incur a fee.</p>
+                            <div class="notif-item-actions">
+                                <button class="notif-action-btn notif-archive-btn">Archive</button>
+                                <button class="notif-action-btn notif-read-btn">Mark as Read <i class="fas fa-envelope" style="font-size:10px;margin-left:3px;"></i></button>
+                                <button class="notif-action-btn notif-view-btn">View Notification</button>
+                            </div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-item-top">
+                                <span class="notif-item-icon"><i class="fas fa-exclamation-triangle" style="color:#f97316;"></i></span>
+                                <span class="notif-item-title">Warning</span>
+                                <span class="notif-item-time">2 hours ago</span>
+                            </div>
+                            <p class="notif-item-body">Please ensure all details are correct. Failed/Incorrect checks will still incur a fee.</p>
+                            <div class="notif-item-actions">
+                                <button class="notif-action-btn notif-archive-btn">Archive</button>
+                                <button class="notif-action-btn notif-unread-btn">Mark as unread <i class="fas fa-envelope-open" style="font-size:10px;margin-left:3px;"></i></button>
+                                <button class="notif-action-btn notif-view-btn">View Notification</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notif-tab-content" id="notifTabRead" style="display:none;">
+                        <div class="notif-empty"><i class="fas fa-comment-dots" style="font-size:28px;margin-bottom:10px;display:block;"></i>No read messages.</div>
+                    </div>
+                    <div class="notif-tab-content" id="notifTabArchived" style="display:none;">
+                        <div class="notif-empty"><i class="fas fa-inbox" style="font-size:28px;margin-bottom:10px;display:block;"></i>No archived notifications.</div>
+                    </div>
+                </div>
+            </div>
             <div class="help-menu-wrap" id="helpMenuWrap">
                 <button class="header-icon-btn" id="helpMenuBtn" title="Help" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-question"></i>
@@ -333,6 +525,7 @@
                                             <a class="dropdown-item" href="#">Cancel Review</a>
                                             <a class="dropdown-item" href="#">Send for Review</a>
                                             <a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a>
+                                            <a class="dropdown-item" href="#">Document History</a>
                                         </div>
                                     </div>
                                 </td>
@@ -370,6 +563,7 @@
                                             <a class="dropdown-item" href="#">Cancel Review</a>
                                             <a class="dropdown-item" href="#">Send for Review</a>
                                             <a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a>
+                                            <a class="dropdown-item" href="#">Document History</a>
                                         </div>
                                     </div>
                                 </td>
@@ -407,6 +601,7 @@
                                             <a class="dropdown-item" href="#">Cancel Review</a>
                                             <a class="dropdown-item" href="#">Send for Review</a>
                                             <a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a>
+                                            <a class="dropdown-item" href="#">Document History</a>
                                         </div>
                                     </div>
                                 </td>
@@ -444,6 +639,7 @@
                                             <a class="dropdown-item" href="#">Cancel Review</a>
                                             <a class="dropdown-item" href="#">Send for Review</a>
                                             <a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a>
+                                            <a class="dropdown-item" href="#">Document History</a>
                                         </div>
                                     </div>
                                 </td>
@@ -481,6 +677,7 @@
                                             <a class="dropdown-item" href="#">Cancel Review</a>
                                             <a class="dropdown-item" href="#">Send for Review</a>
                                             <a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a>
+                                            <a class="dropdown-item" href="#">Document History</a>
                                         </div>
                                     </div>
                                 </td>
@@ -518,6 +715,7 @@
                                             <a class="dropdown-item" href="#">Cancel Review</a>
                                             <a class="dropdown-item" href="#">Send for Review</a>
                                             <a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a>
+                                            <a class="dropdown-item" href="#">Document History</a>
                                         </div>
                                     </div>
                                 </td>
@@ -1440,7 +1638,7 @@
 
                         // Change action button back to dropdown
                         var actionCell = row.cells[7];
-                        actionCell.innerHTML = '<div class="dropdown"><button class="btn btn-action dropdown-toggle" type="button">&#8230;</button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="#">Edit</a><a class="dropdown-item text-danger" href="#">Delete</a><a class="dropdown-item" href="#">View</a><a class="dropdown-item" href="#">Download All</a><a class="dropdown-item" href="#">Cancel Review</a><a class="dropdown-item" href="#">Send for Review</a><a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a></div></div>';
+                        actionCell.innerHTML = '<div class="dropdown"><button class="btn btn-action dropdown-toggle" type="button">&#8230;</button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="#">Edit</a><a class="dropdown-item text-danger" href="#">Delete</a><a class="dropdown-item" href="#">View</a><a class="dropdown-item" href="#">Download All</a><a class="dropdown-item" href="#">Cancel Review</a><a class="dropdown-item" href="#">Send for Review</a><a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a><a class="dropdown-item" href="#">Document History</a></div></div>';
                     }
                 });
 
@@ -1467,7 +1665,7 @@
 
                         // Change action button back to dropdown
                         var actionCell = row.cells[7];
-                        actionCell.innerHTML = '<div class="dropdown"><button class="btn btn-action dropdown-toggle" type="button">&#8230;</button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="#">Edit</a><a class="dropdown-item text-danger" href="#">Delete</a><a class="dropdown-item" href="#">View</a><a class="dropdown-item" href="#">Download All</a><a class="dropdown-item" href="#">Cancel Review</a><a class="dropdown-item" href="#">Send for Review</a><a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a></div></div>';
+                        actionCell.innerHTML = '<div class="dropdown"><button class="btn btn-action dropdown-toggle" type="button">&#8230;</button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="#">Edit</a><a class="dropdown-item text-danger" href="#">Delete</a><a class="dropdown-item" href="#">View</a><a class="dropdown-item" href="#">Download All</a><a class="dropdown-item" href="#">Cancel Review</a><a class="dropdown-item" href="#">Send for Review</a><a class="dropdown-item mark-current-toggle" href="#">Mark as Current</a><a class="dropdown-item" href="#">Document History</a></div></div>';
                     }
                 });
 
@@ -1475,6 +1673,163 @@
             }
         });
     </script>
+
+    <script>
+        // Document History Modal
+        (function() {
+            var overlay, closeBtn;
+            document.addEventListener('DOMContentLoaded', function() {
+                overlay = document.getElementById('docHistoryModalOverlay');
+                closeBtn = document.getElementById('docHistoryCloseBtn');
+                closeBtn.addEventListener('click', close);
+                overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+            });
+
+            var HISTORY = [
+                {
+                    title: 'Document created by <span class="dh-name">James Hooper</span>',
+                    check: '', time: '12 Mar 2022',
+                    subs: [
+                        { label: 'File:', value: 'My Important File.wrd' },
+                        { label: 'Version:', value: 'VERSION 1.3' },
+                        { label: 'Description:', value: 'Created to make compliance easier and more efficient' },
+                        { label: 'Next review date:', value: '12th of March 2022' }
+                    ]
+                },
+                {
+                    title: 'Document updated by <span class="dh-name">James Hooper</span>',
+                    check: '', time: '12 Mar 2022',
+                    subs: [
+                        { label: 'File:', value: 'My Important File.wrd' },
+                        { label: 'Version:', value: 'VERSION 1.3' },
+                        { label: 'Description:', value: 'Created to make compliance easier and more efficient' },
+                        { label: 'Next review date:', value: '12th of March 2022' }
+                    ]
+                },
+                {
+                    title: 'Document rejected by <span class="dh-name">James Hooper</span>',
+                    check: 'check-red', time: '12 Mar 2022',
+                    subs: [
+                        { label: 'Reason:', value: 'Please review the latest ML/TF risk assessment.' }
+                    ]
+                },
+                {
+                    title: 'Review request sent by <span class="dh-name">James Hooper</span>',
+                    check: 'check-orange', time: '7 Mar 2022',
+                    subs: [
+                        { label: 'File:', value: 'My Important File.wrd' }
+                    ]
+                },
+                {
+                    title: 'Document approved by <span class="dh-name">James Hooper</span>',
+                    check: '', time: '6 Mar 2022',
+                    subs: [
+                        { label: 'File:', value: 'My Important File.wrd' },
+                        { label: 'Version:', value: 'VERSION 1.3' }
+                    ]
+                },
+                {
+                    title: 'Marked as current by <span class="dh-name">James Hooper</span>',
+                    check: '', time: '14 Mar 2022',
+                    subs: [
+                        { label: 'Status:', value: 'Current' }
+                    ]
+                },
+                {
+                    title: 'Marked as non-current by <span class="dh-name">James Hooper</span>',
+                    check: 'check-grey', time: '22 Mar 2022',
+                    subs: [
+                        { label: 'Status:', value: 'Non-Current' }
+                    ]
+                }
+            ];
+
+            function renderTimeline() {
+                var html = '<div class="dh-timeline">';
+                HISTORY.forEach(function(item) {
+                    var subsHtml = (item.subs || []).map(function(s) {
+                        var valueClass = s.label === 'File:' ? 'dh-sub-value dh-sub-value-file' : 'dh-sub-value';
+                        var truncLimit = 32;
+                        var needsTrunc = s.value.length > truncLimit;
+                        var truncated = needsTrunc ? s.value.substring(0, truncLimit) + '…' : s.value;
+                        var expandAttr = needsTrunc ? ' data-full="' + s.value.replace(/"/g, '&quot;') + '" data-short="' + truncated.replace(/"/g, '&quot;') + '" data-expanded="false" style="cursor:pointer;"' : '';
+                        return '<div class="dh-sub-item"><span class="dh-sub-label">' + s.label + '</span><span class="' + valueClass + '"' + expandAttr + '><span class="dh-val-text">' + truncated + '</span></span></div>';
+                    }).join('');
+
+                    var checkIcon = item.check === 'check-red' ? 'fa-times' : item.check === 'check-orange' ? 'fa-paper-plane' : item.check === 'check-grey' ? 'fa-flag' : 'fa-check';
+                    html +=
+                        '<div class="dh-section">' +
+                            '<div class="dh-section-header">' +
+                                '<div class="dh-section-check ' + (item.check || '') + '"><i class="fas ' + checkIcon + '"></i></div>' +
+                                '<span class="dh-section-title">' + item.title + '</span>' +
+                                '<span class="dh-section-time">' + item.time + '</span>' +
+                                '<i class="fas fa-chevron-up dh-section-chevron"></i>' +
+                            '</div>' +
+                            '<div class="dh-section-body">' + subsHtml + '</div>' +
+                        '</div>';
+                });
+                html += '</div>';
+                var container = document.getElementById('docHistoryTimeline');
+                container.innerHTML = html;
+
+                container.querySelectorAll('.dh-section-header').forEach(function(hdr) {
+                    hdr.addEventListener('click', function() {
+                        hdr.closest('.dh-section').classList.toggle('collapsed');
+                    });
+                });
+
+                container.querySelectorAll('.dh-sub-value[data-full]').forEach(function(el) {
+                    el.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (el.classList.contains('animating')) return;
+                        var expanded = el.dataset.expanded === 'true';
+                        var textSpan = el.querySelector('.dh-val-text');
+                        el.classList.add('animating');
+                        setTimeout(function() {
+                            textSpan.textContent = expanded ? el.dataset.short : el.dataset.full;
+                            el.style.maxWidth = expanded ? '260px' : '600px';
+                            el.style.whiteSpace = expanded ? 'nowrap' : 'normal';
+                            el.dataset.expanded = expanded ? 'false' : 'true';
+                            el.classList.remove('animating');
+                        }, 150);
+                    });
+                });
+            }
+
+            function open() {
+                renderTimeline();
+                overlay.classList.add('open');
+            }
+
+            function close() {
+                overlay.classList.remove('open');
+            }
+
+            document.addEventListener('click', function(e) {
+                var item = e.target.closest('.dropdown-item');
+                if (item && item.textContent.trim() === 'Document History') {
+                    e.preventDefault();
+                    document.querySelectorAll('.dropdown-menu.show').forEach(function(m) { m.classList.remove('show'); });
+                    open();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) close(); });
+        })();
+    </script>
+
+    <!-- Document History Modal -->
+    <div class="ukp-modal-overlay" id="docHistoryModalOverlay">
+        <div class="ukp-modal" style="min-width:580px;max-width:700px;">
+            <div class="ukp-modal-header">Document History</div>
+            <div class="ukp-modal-body" style="padding:16px 24px;max-height:70vh;overflow-y:auto;">
+                <div id="docHistoryTimeline"></div>
+            </div>
+            <div class="ukp-modal-footer">
+                <button class="ukp-modal-cancel-btn" id="docHistoryCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Feedback Modal -->
     <div class="ukp-modal-overlay" id="feedbackModalOverlay">
@@ -1557,6 +1912,114 @@
         });
     </script>
 
+    <script>
+        // Notification popover toggle
+        (function() {
+            var btn = document.getElementById('notifBtn');
+            var dropdown = document.getElementById('notifDropdown');
+            var wrap = document.getElementById('notifWrap');
+            var tabs = wrap.querySelectorAll('.notif-tab');
+            var contents = {
+                unread: document.getElementById('notifTabUnread'),
+                read: document.getElementById('notifTabRead'),
+                archived: document.getElementById('notifTabArchived')
+            };
+
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (wrap.classList.contains('open')) {
+                    wrap.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    dropdown.style.display = 'block';
+                    requestAnimationFrame(function() {
+                        wrap.classList.add('open');
+                        btn.setAttribute('aria-expanded', 'true');
+                    });
+                }
+            });
+
+            dropdown.addEventListener('transitionend', function() {
+                if (!wrap.classList.contains('open')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!wrap.contains(e.target)) {
+                    wrap.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    wrap.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('active'); });
+                    tab.classList.add('active');
+                    Object.keys(contents).forEach(function(key) {
+                        contents[key].style.display = key === tab.dataset.tab ? 'flex' : 'none';
+                    });
+                    searchInput.value = '';
+                    wrap.querySelectorAll('.notif-item').forEach(function(item) {
+                        item.style.display = '';
+                    });
+                    var isSearchable = tab.dataset.tab === 'unread';
+                    searchInput.closest('.notif-search-wrap').style.display = isSearchable ? '' : 'none';
+                });
+            });
+
+            var searchInput = document.getElementById('notifSearch');
+            searchInput.addEventListener('input', function() {
+                var query = this.value.toLowerCase().trim();
+                var activeContent = wrap.querySelector('.notif-tab-content[style*="flex"], .notif-tab-content:not([style])');
+                var items = activeContent ? activeContent.querySelectorAll('.notif-item') : [];
+                var visibleCount = 0;
+                items.forEach(function(item) {
+                    var text = item.textContent.toLowerCase();
+                    var show = !query || text.includes(query);
+                    item.style.display = show ? '' : 'none';
+                    if (show) visibleCount++;
+                });
+                var noResults = activeContent ? activeContent.querySelector('.notif-no-results') : null;
+                if (query && visibleCount === 0) {
+                    if (!noResults) {
+                        noResults = document.createElement('div');
+                        noResults.className = 'notif-empty notif-no-results';
+                        noResults.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.73 36.6" style="width:39px;height:39px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;"><path fill="#888" d="M20.78,20.76c-.95,5.24,1.76,10.48,6.66,12.53.02.55.02,1.07,0,1.59-.02,1.04-.8,1.72-1.84,1.72H1.85C.74,36.6,0,35.86,0,34.75V1.85C-.02.82.7,0,1.72,0h14.29s-.01,9.6-.01,9.6c0,1.02.69,1.82,1.73,1.83h9.69c.04.36.06.66-.01,1.01-3.47,1.51-5.95,4.59-6.63,8.31Z"/><path fill="#888" d="M43.82,36.22c-.4.37-1.07.54-1.5.11l-5.68-5.62c-4.95,2.85-10.72.82-13.06-4.22-1.03-2.61-.98-5.53.39-8,2.5-4.48,7.9-6.04,12.42-3.69,4.6,2.68,6.11,8.07,3.49,12.73l5.56,5.57c.42.43.33,1.03,0,1.48l-1.63,1.64ZM36.58,22.87c0-2.51-2.04-4.55-4.55-4.55s-4.55,2.04-4.55,4.55,2.04,4.55,4.55,4.55,4.55-2.04,4.55-4.55Z"/><path fill="#888" d="M26.84,7.4c.52.51.7,1.08.59,1.76h-9.13s0-9.13,0-9.13c.55-.06,1.05,0,1.49.33l7.05,7.04Z"/></svg>Nothing has been found.';
+                        activeContent.appendChild(noResults);
+                    }
+                    noResults.style.display = '';
+                } else if (noResults) {
+                    noResults.style.display = 'none';
+                }
+            });
+
+            dropdown.addEventListener('click', function(e) {
+                var readBtn = e.target.closest('.notif-read-btn');
+                var unreadBtn = e.target.closest('.notif-unread-btn');
+                if (readBtn) {
+                    readBtn.classList.remove('notif-read-btn');
+                    readBtn.classList.add('notif-unread-btn');
+                    readBtn.innerHTML = 'Mark as unread <i class="fas fa-envelope-open" style="font-size:10px;margin-left:3px;"></i>';
+                    var item = readBtn.closest('.notif-item');
+                    if (item) item.style.background = 'rgb(5 39 47)';
+                } else if (unreadBtn) {
+                    unreadBtn.classList.remove('notif-unread-btn');
+                    unreadBtn.classList.add('notif-read-btn');
+                    unreadBtn.innerHTML = 'Mark as Read <i class="fas fa-envelope" style="font-size:10px;margin-left:3px;"></i>';
+                    var item = unreadBtn.closest('.notif-item');
+                    if (item) item.style.background = '';
+                }
+            });
+        })();
+    </script>
     <script>
         (function() {
             var btn = document.getElementById('helpMenuBtn');
